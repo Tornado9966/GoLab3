@@ -88,3 +88,26 @@ func lab3(filetemp os.FileInfo, pwd string) {
     res.WriteString(strconv.Itoa(countWords))
     counter++                  
 }
+
+func main() {
+    var countFiles = 0
+
+    files, err := ioutil.ReadDir(os.Args[1])
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    pwd, err := os.Getwd()
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
+
+    for _, filetemp := range files {            		        	
+        go lab3(filetemp, pwd)
+        countFiles++	
+    }
+
+    for counter != countFiles {}
+    fmt.Println("Total number of processed files:", countFiles)
+}
