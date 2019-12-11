@@ -1,3 +1,5 @@
-Hello -
-world
-dear	friend
+Golang has become one of the most trending languages in the developer community because go provides
+the best of both worlds, by striking a balance between dynamic and statically compiled languages.
+The code is easy to read, the specification is short, but even so, it includes a built-in web server!
+Throughout this Golang tutorial, not only will we be covering the reasons that make Go such a fantastic
+language, but also go over a majority of its concepts. 
