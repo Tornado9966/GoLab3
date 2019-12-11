@@ -44,7 +44,7 @@ func lab3(filetemp os.FileInfo, pwd string) {
 		var next = string(data[0])
 		
 		for a := 0; a < n; a++ {
-			if (!IsLetter(string(data[a])) && (!IsSymbol(string(data[a])))) {
+			if (!IsLetter(string(data[a])) && (!IsSymbol(string(data[a]))) && (string(data[a]) != "-")) {
 				data[a] = []byte(" ")[0]
 			}
 		}
@@ -53,7 +53,7 @@ func lab3(filetemp os.FileInfo, pwd string) {
         countWords += len(words)
 		
 		for i := 0; i < (n - 2); i++ {
-			if (string(data[i]) == " " && IsPunctuation(string(data[i+1])) && string(data[i+2]) == " ") {
+			if (IsSymbol(string(data[i])) && IsPunctuation(string(data[i+1])) && IsSymbol(string(data[i+2]))) {
 				countWords--
 			}
 		}
