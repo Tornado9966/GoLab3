@@ -4,18 +4,13 @@ var fs = require('fs');
 var path = require('path');
 var counter = 0;
 
-if (process.argv[2] != "./inputs") {
-    console.log("The argument was entered incorrectly " + process.argv[2] + ". Enter ./inputs");
-    process.exit(-1);
-};
-
 if (process.argv.length <= 2) {
-    console.log("Usage: " + __filename + " ./inputs ./outputs");
+    console.log("You have to make two arguments!");
     process.exit(-1);
 };
 
 if (process.argv.length <= 3) {
-    console.log("Usage: " + __filename + " ./outputs");
+    console.log("You need to enter one more argument!");
     process.exit(-1);
 };
 
