@@ -20,7 +20,11 @@ function WordCount(str) {
   return str.split(/\s+/g).length;
 };
 
-fs.mkdir(process.argv[3], function() {});
+fs.exists(process.argv[3], function(exists) {
+  if (!exists) {
+   fs.mkdir(process.argv[3], function() {});
+  }
+ });
 
 fs.readdir(process.cwd() + "/" + process.argv[2]+ "/", 'utf8', function (err, data) {
   if (err) throw err;
