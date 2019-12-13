@@ -14,34 +14,77 @@ if (process.argv.length <= 3) {
     process.exit(-1);
 };
 
-//function that counts words in text
-function WordCount(str) {
-  str = str.replace(/[^A-Za-zА-Яа-я\s+]/g,'');
-  return str.split(/\s+/g).length;
+function WordCount(data, prevData, result) {
+    data = data.replace(/[^A-Za-zА-Яа-я\s+]/g,'');
+
+    if (data == 0) {
+        return 0;
+    }
+    var res = data.split(/\s+/g).length;
+    
+    if (data[0] == " " || data[0] == "\n" || data[0] == 0) {
+            res--;
+    }
+
+    if (data[data.length - 1] == " " || data[data.length - 1] == "\n" || data[data.length - 1] == 0) {
+            res--;
+    }
+
+    if (result !== 0) {
+        if (prevData.length !== 0) {
+			if (prevData[prevData.length - 1] != " " && data[0] != " ") {
+                if (prevData[prevData.length - 1] != "\n" && data[0] != "\n") {
+	            res--;
+       	        }
+            }
+		}
+    }
+    return res;
 };
 
-fs.exists(process.argv[3], function(exists) {
-  if (!exists) {
-   fs.mkdir(process.argv[3], function() {});
-  }
- });
+function makeFolder(path) {
+    try {
+        if (!fs.existsSync(path)){
+            fs.mkdirSync(path);
+        }
+    } catch (err) {
+        throw err;
+    }
+};
 
-fs.readdir(process.cwd() + "/" + process.argv[2]+ "/", 'utf8', function (err, data) {
-  if (err) throw err;
-  data.forEach(file => {
-	counter++;
-	
-    async function logChunks(readable) {
-      for await (const chunk of readable) {
-		var countW = WordCount(chunk);
-		fs.writeFile(process.cwd() + "/" + process.argv[3]+"/"+file.replace(/txt/ig, '')+ "res", countW, function(error){
-          if(error) throw error;
-        });
-      };
-    };
+function mainWordCount(dir1, dir2) {
+    makeFolder(dir2);
 
-    const readable = fs.createReadStream(process.cwd() + "/" + process.argv[2] + "/" + file, {encoding: 'utf8'});
-	logChunks(readable);
-  });
-  console.log("Total number of processed files: " + counter);
-});
+    let files = fs.readdirSync(dir1)
+        .filter(fileName => fileName.endsWith('.txt'));
+
+    let counter = 0;
+    for (let file of files) {
+        let prevData = '';
+        let prevResult = 0;
+        let result = 0;
+        const stream = fs.createReadStream(dir1 + '/' + file, { highWaterMark: 100})
+        .on('data', (data) => {
+            data = data.toString();
+			result += WordCount(data, prevData, result);
+                
+            const resFile = dir2 + '/' + file.substring(0, file.indexOf('.txt')) + '.res';
+            if (result)
+				fs.writeFile(resFile, result, (err) => {
+				if (err) throw err;
+            });
+			prevData = data;
+		})
+		.on('end', () => {
+			counter++;
+			if (counter == files.length)
+				console.log('Total number of processed files: ' + files.length);
+		});
+	}		
+};
+
+if (!process.argv[2] || !process.argv[3]) {
+	throw new Error('Incorrect input!');
+} else {
+	mainWordCount(process.argv[2], process.argv[3]);
+};
