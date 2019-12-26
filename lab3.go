@@ -31,6 +31,18 @@ func lab3(filetemp os.FileInfo, pwd string) {
     if err != nil {
 		log.Fatal(err)
     } 
+
+    defer file.Close()
+
+    var str string = filetemp.Name()
+    res, er := os.Create(pwd + SplitAny(os.Args[2], ".")[0] + "/" + SplitAny(str, ".")[0] + ".res")
+
+    if er != nil{
+        fmt.Println("Unable to create file:", err) 
+        os.Exit(1) 
+    }
+
+    defer res.Close() 
 	
 	data := make([]byte, bufSize)
 	dataPrev := make([]byte, bufSize)
@@ -69,22 +81,6 @@ func lab3(filetemp os.FileInfo, pwd string) {
 		dataPrev = data
     }
 
-    if error := os.Chdir(pwd + SplitAny(os.Args[2], ".")[0]); error != nil {
-        os.Mkdir(pwd + SplitAny(os.Args[2], ".")[0], 0700)
-        if e := os.Chdir(pwd + SplitAny(os.Args[2], ".")[0]); e != nil {
-            panic(e)
-        }
-    }
-
-    var str string = filetemp.Name()
-    res, er := os.Create(SplitAny(str, ".")[0] + ".res")
-
-    if er != nil{
-        fmt.Println("Unable to create file:", err) 
-        os.Exit(1) 
-    }
-
-    defer res.Close() 
     res.WriteString(strconv.Itoa(countWords))
     counter++                  
 }
@@ -101,6 +97,10 @@ func main() {
     if err != nil {
         fmt.Println(err)
         os.Exit(1)
+    }
+
+    if _, error := os.Stat(pwd + SplitAny(os.Args[2], ".")[0]); error != nil {
+        os.Mkdir(pwd + SplitAny(os.Args[2], ".")[0], 0700)
     }
 
     for _, filetemp := range files {            		        	
